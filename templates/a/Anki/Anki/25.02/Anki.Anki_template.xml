@@ -1,0 +1,35 @@
+<MsixPackagingToolTemplate
+    xmlns="http://schemas.microsoft.com/appx/msixpackagingtool/template/2018"
+    xmlns:v2="http://schemas.microsoft.com/msix/msixpackagingtool/template/1904"
+    xmlns:v3="http://schemas.microsoft.com/msix/msixpackagingtool/template/1907"
+    xmlns:v4="http://schemas.microsoft.com/msix/msixpackagingtool/template/1910"
+    xmlns:v5="http://schemas.microsoft.com/msix/msixpackagingtool/template/2001">
+
+    <Settings
+        AllowTelemetry="false"
+        ApplyAllPrepareComputerFixes="true"
+        GenerateCommandLineFile="true"
+        AllowPromptForPassword="false" 
+        EnforceMicrosoftStoreVersioningRequirements="false"
+        v5:AddPackageIntegrity="true">    
+    </Settings>
+
+    <SaveLocation
+        PackagePath="C:\Users\skyle\Desktop\Anki.Anki.msix" 
+        TemplatePath="C:\Users\skyle\Desktop\Anki.Anki_template.xml" />
+
+    <Installer
+        Path="C:\Users\skyle\AppData\Local\Temp\anki.exe"
+        Arguments="/S /D=C:\Program Files\Anki"
+        InstallLocation="C:\Program Files\Anki" />
+
+    <PackageInformation
+        PackageName="Anki.Anki"
+        PackageDisplayName="Anki"
+        PublisherName="CN=skye@soss.website"
+        PublisherDisplayName="Skyenet"
+        Version="25.02.0.0"
+        v4:PackageDescription="Anki repackaged as MSIX">
+
+    </PackageInformation>
+</MsixPackagingToolTemplate>
