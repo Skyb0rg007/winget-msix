@@ -1,0 +1,31 @@
+<MsixPackagingToolTemplate
+    xmlns="http://schemas.microsoft.com/appx/msixpackagingtool/template/2018"
+    xmlns:v2="http://schemas.microsoft.com/msix/msixpackagingtool/template/1904"
+    xmlns:v3="http://schemas.microsoft.com/msix/msixpackagingtool/template/1907"
+    xmlns:v4="http://schemas.microsoft.com/msix/msixpackagingtool/template/1910"
+    xmlns:v5="http://schemas.microsoft.com/msix/msixpackagingtool/template/2001">
+<!--Note: You only need to include xmlns:v2 - xmlns:v5 if you are using one of the features that use those schemas -->
+
+    <Settings
+        AllowTelemetry="false"
+        ApplyAllPrepareComputerFixes="true"
+        GenerateCommandLineFile="true"
+        AllowPromptForPassword="false" 
+	    EnforceMicrosoftStoreVersioningRequirements="false"
+        v2:ServerPortNumber="1599"
+        v5:AddPackageIntegrity="true">    
+    </Settings>
+
+    <Installer
+        Path="C:\Users\skyle\Downloads\strawberry-perl-5.40.0.1-64bit.msi"
+        InstallLocation="C:\Strawberry" />
+	
+    <PackageInformation
+        PackageName="StrawberryPerl.StrawberryPerl"
+        PackageDisplayName="Strawberry Perl"
+        PublisherName="CN=skye@soss.website"
+        PublisherDisplayName="Skyenet"
+        Version="5.40.0.1">
+
+    </PackageInformation>
+</MsixPackagingToolTemplate>

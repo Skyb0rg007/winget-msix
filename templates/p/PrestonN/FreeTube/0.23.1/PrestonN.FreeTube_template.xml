@@ -1,0 +1,32 @@
+<MsixPackagingToolTemplate
+    xmlns="http://schemas.microsoft.com/appx/msixpackagingtool/template/2018"
+    xmlns:v2="http://schemas.microsoft.com/msix/msixpackagingtool/template/1904"
+    xmlns:v3="http://schemas.microsoft.com/msix/msixpackagingtool/template/1907"
+    xmlns:v4="http://schemas.microsoft.com/msix/msixpackagingtool/template/1910"
+    xmlns:v5="http://schemas.microsoft.com/msix/msixpackagingtool/template/2001">
+
+    <Settings
+        AllowTelemetry="false"
+        ApplyAllPrepareComputerFixes="true"
+        GenerateCommandLineFile="true"
+        AllowPromptForPassword="false"
+        EnforceMicrosoftStoreVersioningRequirements="false"
+        v2:ServerPortNumber="1599"
+        v5:AddPackageIntegrity="true">
+
+    </Settings>
+
+    <Installer
+        Path="C:\Users\skyle\Downloads\freetube-0.23.1-setup-x64.exe"
+        Arguments="/S /ALLUSERS"
+        />
+
+    <PackageInformation
+        PackageName="PrestonN.FreeTube"
+        PackageDisplayName="FreeTube"
+        PublisherName="CN=skye@soss.website"
+        PublisherDisplayName="Skyenet"
+        Version="0.23.1.0">
+
+    </PackageInformation>
+</MsixPackagingToolTemplate>
