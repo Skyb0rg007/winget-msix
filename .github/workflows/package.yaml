@@ -89,6 +89,7 @@ jobs:
           $NewManifestPath = "C:\Users\runneradmin\Downloads\installer.yaml"
           $WinGetUri = "https://raw.githubusercontent.com/microsoft/winget-pkgs/refs/heads/master/manifests"
           $ManifestUri = "$WinGetUri/$C/$Com/$Pkg/${{ matrix.version }}/$Com.$Pkg.installer.yaml"
+          New-Item -Type Directory C:\Users\runneradmin\Documents\MSIX-Apps\${{ matrix.package }}-${{ matrix.version }} -Force
           Write-Output "Manifest URI: $ManifestUri"
           Invoke-WebRequest -Uri $ManifestUri -OutFile $NewManifestPath
           if (Test-Path $OldManifestPath) {
