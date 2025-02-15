@@ -4,7 +4,6 @@
     xmlns:v3="http://schemas.microsoft.com/msix/msixpackagingtool/template/1907"
     xmlns:v4="http://schemas.microsoft.com/msix/msixpackagingtool/template/1910"
     xmlns:v5="http://schemas.microsoft.com/msix/msixpackagingtool/template/2001">
-<!--Note: You only need to include xmlns:v2 - xmlns:v5 if you are using one of the features that use those schemas -->
 
     <Settings
         AllowTelemetry="false"
@@ -75,20 +74,11 @@
 
     </Settings>
 
-    <!--Note: this section takes precedence over the Settings::ApplyAllPrepareComputerFixes attribute and is optional
-    <PrepareComputer
-        DisableDefragService="true"
-        DisableWindowsSearchService="true"
-        DisableSmsHostService="true"
-        DisableWindowsUpdateService="true"/>
-    -->
-
-    <SaveLocation
-        PackagePath="C:\Users\skyle\Desktop\msix\MyPackage.msix"
-        TemplatePath="C:\Users\skyle\Desktop\msix\MyTemplate.xml" />
+    <!-- These are set by the Build-Msix Cmdlet -->
+    <SaveLocation PackagePath="" TemplatePath="" />
 
     <Installer
-        Path="Path\To\Installer.msi"
+        Path=""
         InstallLocation="C:\Program Files\MyAppInstallLocation" />
 
     <!--NOTE: This section specifies that the conversion will be run on a local Virtual Machine. This is optional if you want to change your conversion environment from the default local machine.
@@ -104,16 +94,7 @@
         PackageDisplayName="MyApp Display Name"
         PublisherName="CN=skye@soss.website"
         PublisherDisplayName="Skyenet"
-        Version="1.1.0.0"
-        MainPackageNameForModificationPackage="MainPackageIdentityName">
-
-    <!--Note: This is optional, if you want to sign your package with Device Guard signing
-        <v4:SigningInformation>
-            <v4:DeviceGuardSigning
-                Tokenfile="tokenfile.json"
-                TimestampUrl="https://mytimestamp.com"/>
-        </v4:SigningInformation>
-    -->
+        Version="1.1.0.0">
 
     <!--NOTE: This ID will be used if the Application entry detected matches the specified ExecutableName
         <Applications>

@@ -14,8 +14,10 @@
         v5:AddPackageIntegrity="true">    
     </Settings>
 
+    <SaveLocation PackagePath="" TemplatePath="" />
+
     <Installer
-        Path="C:\Users\skyle\AppData\Local\Temp\anki.exe"
+        Path=""
         Arguments="/S /D=C:\Program Files\Anki"
         InstallLocation="C:\Program Files\Anki" />
 

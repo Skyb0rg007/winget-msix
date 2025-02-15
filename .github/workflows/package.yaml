@@ -2,6 +2,9 @@ on:
   workflow_dispatch:
     inputs: {}
 
+# permissions:
+#   id-token: write
+#   attestations: write
 
 jobs:
   build-anki:
@@ -13,16 +16,12 @@ jobs:
       - name: Install MSIX Packaging Tool
         run: |
           New-Item -Type Directory -Name _build
+
           $Version = "v0.1.2"
-          $Dir = "ACP-MPT-$Version"
-          $ZipFile = "ACP-MPT-$Version.zip"
-          $Uri = "https://github.com/microsoft/win32-app-isolation/releases/download/$Version/$ZipFile"
-          Invoke-WebRequest -Uri $Uri -OutFile .\_build\$ZipFile
-          Expand-Archive -Path .\_build\$ZipFile -DestinationPath .\_build
+          $Uri = "https://github.com/microsoft/win32-app-isolation/releases/download/$Version/ACP-MPT-$Version.zip"
+          Invoke-WebRequest -Uri $Uri -OutFile .\_build\ACP-MPT-$Version.zip
+          Expand-Archive -Path .\_build\ACP-MPT-$Version.zip -DestinationPath .\_build
 
-          ls .\_build
-
-          # This causes a warning due to incompatibilities
           Import-Module -UseWindowsPowerShell Appx
           Add-AppxPackage -Path .\_build\MsixPackagingTool.msixbundle
 
@@ -36,24 +35,22 @@ jobs:
           } else {
             Write-Error ".\_build\$ExeFile did not properly download"
           }
-          Write-Output "USERPROFILE = $env:USERPROFILE"
 
-      - name: Update the XML document
+      - name: Package the MSIX
         run: |
+          New-Item -Type Directory -Name _build\msix-output
           $File = "templates\a\Anki\Anki\25.02\Anki.Anki_template.xml"
-          [xml]$Doc = Get-Content $File
-          $Doc.MsixPackagingToolTemplate.Installer.Path = "$PWD\_build\anki.exe"
-          $Doc.Save("$PWD\$File")
-          Get-Content "$PWD\$File" | Write-Output
+          .\scripts\Build-Msix.ps1 -TemplatePath $File -InstallerPath .\_build\anki.exe -OutputPath .\_build\msix-output
 
-      - name: Run the MSIX Packaging Tool
-        run: |
-          MsixPackagingTool create-package --template templates\a\Anki\Anki\25.02\Anki.Anki_template.xml
+      # - name: Attest to the artifact
+      #   uses: actions/attest-build-provenance@v2
+      #   with:
+      #     subject-path: 'C:/Users/runneradmin/Desktop/?.msix'
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
           name: msix
           path: |
-            C:/Users/runneradmin/Desktop
+            _build/msix-output
 
