@@ -31,10 +31,18 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Setup PowerShell module cache
+        uses: actions/cache@v4
+        id: ps-cacher
+        with:
+          path: C:/Users/runneradmin/Documents/PowerShell/Modules
+          key: ${{ runner.os }}-PowerShell-Dependencies
+
       - name: Install powershell-yaml
+        if: steps.ps-cacher.outputs.cache-hit != 'true'
         run: |
           Set-PSRepository PSGallery -InstallationPolicy Trusted
-          Install-Module powershell-yaml -Force
+          Install-Module powershell-yaml -ErrorAction Stop
 
       - name: Install MSIX Packaging Tool
         run: |
@@ -71,4 +79,4 @@ jobs:
         with:
           name: ${{ matrix.package }}-${{ matrix.version }}-${{ matrix.arch }}-template
           path: |
-            _build/msix-output/*.yaml
+            _build/msix-output/*.xml
