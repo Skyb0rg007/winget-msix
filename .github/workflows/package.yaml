@@ -7,40 +7,53 @@ jobs:
   build-anki:
     runs-on: windows-latest
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Install MSIX Packaging Tool
         run: |
+          New-Item -Type Directory -Name _build
           $Version = "v0.1.2"
           $Dir = "ACP-MPT-$Version"
           $ZipFile = "ACP-MPT-$Version.zip"
           $Uri = "https://github.com/microsoft/win32-app-isolation/releases/download/$Version/$ZipFile"
-          Invoke-WebRequest -Uri $Uri -OutFile $ZipFile
-          Expand-Archive -Path $ZipFile
-          Add-AppxPackage -Path "$Dir\MsixPackagingTool.msixbundle"
+          Invoke-WebRequest -Uri $Uri -OutFile .\_build\$ZipFile
+          Expand-Archive -Path .\_build\$ZipFile -DestinationPath .\_build
+
+          ls .\_build
+
+          # This causes a warning due to incompatibilities
+          Import-Module -UseWindowsPowerShell Appx
+          Add-AppxPackage -Path .\_build\MsixPackagingTool.msixbundle
 
       - name: Download the Anki installer
         run: |
           $Uri = "https://github.com/ankitects/anki/releases/download/25.02/anki-25.02-windows-qt6.exe"
           $ExeFile = "anki.exe"
-          Invoke-WebRequest -Uri $Uri -OutFile $ExeFile
-
-      - name: Checkout repository
-        uses: actions/checkout@v4
+          Invoke-WebRequest -Uri $Uri -OutFile .\_build\$ExeFile
+          if (Test-Path .\_build\$ExeFile) {
+            Write-Output "Downloaded exe to .\_build\$ExeFile"
+          } else {
+            Write-Error ".\_build\$ExeFile did not properly download"
+          }
+          Write-Output "USERPROFILE = $env:USERPROFILE"
 
       - name: Update the XML document
         run: |
           $File = "templates\a\Anki\Anki\25.02\Anki.Anki_template.xml"
           [xml]$Doc = Get-Content $File
-          $Doc.MsixPackagingToolTemplate.Installer.Path = "$PWD\anki.exe"
-          $Doc.Save($File)
-
-      - name: Run the MSIX Packaging Tool
-        run: |
-          MsixPackagingTool create-package --template templates\a\Anki\Anki\25.02\Anki.Anki_template.xml
+          $Doc.MsixPackagingToolTemplate.Installer.Path = "$PWD\_build\anki.exe"
+          $Doc.Save("$PWD\$File")
+          Get-Content "$PWD\$File" | Write-Output
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
           name: msix
           path: |
-            .
-            Desktop
+            ./_build
+
+      - name: Run the MSIX Packaging Tool
+        run: |
+          MsixPackagingTool create-package --template templates\a\Anki\Anki\25.02\Anki.Anki_template.xml
+
