@@ -53,7 +53,16 @@ $PkgInfo = $Template.MsixPackagingToolTemplate.PackageInformation
 $PackageName = $PkgInfo.PackageName
 $PackageVersion = $PkgInfo.Version
 
-Write-Verbose "Building MSIX for $PackageName version $PackageVersion"
+# Normalize the version for MSIX packaging
+$MsixVersion = [version]$PackageVersion
+$PkgInfo.Version = [version]::new(
+    [int]::Max($MsixVersion.Major, 0),
+    [int]::Max($MsixVersion.Minor, 0),
+    [int]::Max($MsixVersion.Build, 0),
+    [int]::Max($MsixVersion.Revision, 0)
+).ToString()
+
+Write-Verbose "Building MSIX for $PackageName version $PackageVersion ($($PkgInfo.Version))"
 
 # Retrieve the WinGet manifest from the official GitHub repo
 $WinGetUri = "https://raw.githubusercontent.com/microsoft/winget-pkgs/refs/heads/master/manifests"
