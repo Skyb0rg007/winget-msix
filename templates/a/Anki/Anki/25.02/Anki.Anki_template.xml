@@ -17,6 +17,9 @@
     <SaveLocation PackagePath="" TemplatePath="" />
 
     <Installer
+        Uri="https://github.com/ankitects/anki/releases/download/25.02/anki-25.02-windows-qt6.exe"
+        Sha256="16E3076DDE0048CF7247AF001552682D96CA3D0E9CA8CE16A6BB2D63E6AC57C8"
+        Extension="exe"
         Path=""
         Arguments="/S /D=C:\Program Files\Anki"
         InstallLocation="C:\Program Files\Anki" />

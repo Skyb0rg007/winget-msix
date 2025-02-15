@@ -28,22 +28,11 @@ jobs:
           Import-Module -UseWindowsPowerShell Appx
           Add-AppxPackage -Path .\_build\MsixPackagingTool.msixbundle
 
-      - name: Download the Anki installer
-        run: |
-          $Uri = "https://github.com/ankitects/anki/releases/download/25.02/anki-25.02-windows-qt6.exe"
-          $ExeFile = "anki.exe"
-          Invoke-WebRequest -Uri $Uri -OutFile .\_build\$ExeFile
-          if (Test-Path .\_build\$ExeFile) {
-            Write-Output "Downloaded exe to .\_build\$ExeFile"
-          } else {
-            Write-Error ".\_build\$ExeFile did not properly download"
-          }
-
       - name: Package the MSIX
         run: |
           New-Item -Type Directory -Name _build\msix-output
           $File = "templates\a\Anki\Anki\25.02\Anki.Anki_template.xml"
-          .\scripts\Build-Msix.ps1 -TemplatePath $File -InstallerPath .\_build\anki.exe -OutputPath .\_build\msix-output
+          .\scripts\Build-Msix.ps1 -TemplatePath $File -OutputPath .\_build\msix-output
 
       # - name: Attest to the artifact
       #   uses: actions/attest-build-provenance@v2
