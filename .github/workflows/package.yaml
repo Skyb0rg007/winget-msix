@@ -5,16 +5,17 @@ on:
   workflow_dispatch:
     inputs: {}
 
-# permissions:
-#   id-token: write
-#   attestations: write
-
 jobs:
-  build-anki:
+  build-anki-x64:
     runs-on: windows-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Install powershell-yaml
+        run: |
+          Set-PSRepository PSGallery -InstallationPolicy Trusted
+          Install-Module powershell-yaml -Force
 
       - name: Install MSIX Packaging Tool
         run: |
@@ -32,12 +33,7 @@ jobs:
         run: |
           New-Item -Type Directory -Name _build\msix-output
           $File = "templates\a\Anki\Anki\25.02\Anki.Anki_template.xml"
-          .\scripts\Build-Msix.ps1 -TemplatePath $File -OutputPath .\_build\msix-output
-
-      # - name: Attest to the artifact
-      #   uses: actions/attest-build-provenance@v2
-      #   with:
-      #     subject-path: 'C:/Users/runneradmin/Desktop/?.msix'
+          .\scripts\Build-Msix.ps1 -TemplatePath $File -OutputPath .\_build\msix-output -Architecture x64
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
