@@ -1,0 +1,46 @@
+on:
+  workflow_dispatch:
+    inputs: {}
+
+
+jobs:
+  build-anki:
+    runs-on: windows-latest
+    steps:
+      - name: Install MSIX Packaging Tool
+        run: |
+          $Version = "v0.1.2"
+          $Dir = "ACP-MPT-$Version"
+          $ZipFile = "ACP-MPT-$Version.zip"
+          $Uri = "https://github.com/microsoft/win32-app-isolation/releases/download/$Version/$ZipFile"
+          Invoke-WebRequest -Uri $Uri -OutFile $ZipFile
+          Expand-Archive -Path $ZipFile
+          Add-AppxPackage -Path "$Dir\MsixPackagingTool.msixbundle"
+
+      - name: Download the Anki installer
+        run: |
+          $Uri = "https://github.com/ankitects/anki/releases/download/25.02/anki-25.02-windows-qt6.exe"
+          $ExeFile = "anki.exe"
+          Invoke-WebRequest -Uri $Uri -OutFile $ExeFile
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Update the XML document
+        run: |
+          $File = "templates\a\Anki\Anki\25.02\Anki.Anki_template.xml"
+          [xml]$Doc = Get-Content $File
+          $Doc.MsixPackagingToolTemplate.Installer.Path = "$PWD\anki.exe"
+          $Doc.Save($File)
+
+      - name: Run the MSIX Packaging Tool
+        run: |
+          MsixPackagingTool create-package --template templates\a\Anki\Anki\25.02\Anki.Anki_template.xml
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: msix
+          path: |
+            .
+            Desktop

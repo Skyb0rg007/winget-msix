@@ -14,10 +14,6 @@
         v5:AddPackageIntegrity="true">    
     </Settings>
 
-    <SaveLocation
-        PackagePath="C:\Users\skyle\Desktop\Anki.Anki.msix" 
-        TemplatePath="C:\Users\skyle\Desktop\Anki.Anki_template.xml" />
-
     <Installer
         Path="C:\Users\skyle\AppData\Local\Temp\anki.exe"
         Arguments="/S /D=C:\Program Files\Anki"
