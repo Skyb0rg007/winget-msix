@@ -10,27 +10,24 @@ jobs:
     strategy:
       matrix:
         include:
-          - package: anki
+          - package: Anki.Anki
             version: "25.02"
             arch: x64
-            template: templates\a\Anki\Anki\25.02\Anki.Anki_template.xml
-          - package: freetube
+          - package: PrestonN.FreeTube
             version: "0.23.1"
             arch: x64
-            template: templates\p\PrestonN\FreeTube\0.23.1\PrestonN.FreeTube_template.xml
-          - package: vim
+          - package: vim.vim
             version: "9.1.1039"
             arch: x86
-            template: templates\v\vim\vim\9.1.1039\vim.vim_template.xml
-          - package: vim
+          - package: vim.vim
             version: "9.1.1039"
             arch: x64
-            template: templates\v\vim\vim\9.1.1039\vim.vim_template.xml
     runs-on: windows-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # Cache the PowerShell dependencies
       - name: Setup PowerShell module cache
         uses: actions/cache@v4
         id: ps-cacher
@@ -44,6 +41,7 @@ jobs:
           Set-PSRepository PSGallery -InstallationPolicy Trusted
           Install-Module powershell-yaml -ErrorAction Stop
 
+      # Cache the .msix for the MSIX Packaging Tool version 0.1.2
       - name: Setup MPT cache
         uses: actions/cache@v4
         id: mpt-cacher
@@ -61,9 +59,10 @@ jobs:
           $MPTCache = "C:\Users\runneradmin\Documents\MPT"
           Invoke-WebRequest -Uri $Uri -OutFile $Zip
           Expand-Archive -Path $Zip -DestinationPath $MPT
-          New-Item -Type Directory $MPTCache
+          New-Item -Type Directory -Name $MPTCache
           Move-Item -Path $MPT\MsixPackagingTool.msixbundle -Destination $MPTCache
 
+      # Install MPT since MSIX installs can't be cached
       - name: Install MSIX Packaging Tool
         run: |
           Import-Module -UseWindowsPowerShell Appx
@@ -72,15 +71,18 @@ jobs:
       - name: Package the MSIX
         run: |
           New-Item -Type Directory -Name _build\msix-output
+          $Com, $Pkg = "${{ matrix.package }}".Split(".")
+          $C = [char]::ToLower($Com[0])
           $Params = @{
-            TemplatePath = "${{ matrix.template }}"
+            TemplatePath = "templates\$C\$Com\$Pkg\${{ matrix.version }}\${{ matrix.package }}_template.xml"
             OutputPath = ".\_build\msix-output"
             Architecture = "${{ matrix.arch }}"
             Verbose = $true
           }
+          Write-Output "TemplatePath: $($Params.TemplatePath)"
           .\scripts\Build-Msix.ps1 @Params
 
-      - name: Upload artifacts
+      - name: Upload MSIX
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.package }}-${{ matrix.version }}-${{ matrix.arch }}-msix
