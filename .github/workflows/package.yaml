@@ -13,6 +13,9 @@ jobs:
           - package: anki
             arch: x64
             template: templates\a\Anki\Anki\25.02\Anki.Anki_template.xml
+          - package: freetube
+            arch: x64
+            template: templates\p\PrestonN\FreeTube\0.23.1\PrestonN.FreeTube_template.xml
     runs-on: windows-latest
     steps:
       - name: Checkout repository
