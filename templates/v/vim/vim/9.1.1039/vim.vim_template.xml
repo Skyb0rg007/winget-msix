@@ -1,0 +1,35 @@
+<MsixPackagingToolTemplate
+    xmlns="http://schemas.microsoft.com/appx/msixpackagingtool/template/2018"
+    xmlns:v2="http://schemas.microsoft.com/msix/msixpackagingtool/template/1904"
+    xmlns:v3="http://schemas.microsoft.com/msix/msixpackagingtool/template/1907"
+    xmlns:v4="http://schemas.microsoft.com/msix/msixpackagingtool/template/1910"
+    xmlns:v5="http://schemas.microsoft.com/msix/msixpackagingtool/template/2001">
+
+    <Settings
+        AllowTelemetry="false"
+        ApplyAllPrepareComputerFixes="true"
+        GenerateCommandLineFile="true"
+        AllowPromptForPassword="false"
+        EnforceMicrosoftStoreVersioningRequirements="false"
+        v5:AddPackageIntegrity="true">
+
+    </Settings>
+
+    <SaveLocation PackagePath="" TemplatePath="" />
+
+    <Installer
+        Path=""
+        Arguments="/S /D=C:\Program Files\Vim"
+        InstallLocation="C:\Program Files\Vim" />
+    <!-- TODO: Install to "C:\Program File (x86)" for 32-bit builds -->
+
+    <PackageInformation
+        PackageName="vim.vim"
+        PackageDisplayName="Vim"
+        PublisherName="CN=skye@soss.website"
+        PublisherDisplayName="Skyenet"
+        Version="9.1.1039"
+        v4:PackageDescription="Vim repackaged as MSIX">
+
+    </PackageInformation>
+</MsixPackagingToolTemplate>

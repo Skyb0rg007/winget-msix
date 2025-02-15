@@ -18,6 +18,14 @@ jobs:
             version: "0.23.1"
             arch: x64
             template: templates\p\PrestonN\FreeTube\0.23.1\PrestonN.FreeTube_template.xml
+          - package: vim
+            version: "9.1.1039"
+            arch: x86
+            template: templates\v\vim\vim\9.1.1039\vim.vim_template.xml
+          - package: vim
+            version: "9.1.1039"
+            arch: x64
+            template: templates\v\vim\vim\9.1.1039\vim.vim_template.xml
     runs-on: windows-latest
     steps:
       - name: Checkout repository

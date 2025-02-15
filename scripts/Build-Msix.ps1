@@ -69,6 +69,7 @@ $WinGetUri = "https://raw.githubusercontent.com/microsoft/winget-pkgs/refs/heads
 $Com, $Pkg = $PackageName.Split(".")
 $C = [char]::ToLower($Com[0])
 $ManifestUri = "$WinGetUri/$C/$Com/$Pkg/$PackageVersion/$Com.$Pkg.installer.yaml"
+Write-Verbose "ManifestURI = $ManifestUri"
 $ManifestPath = New-TemporaryFileExt -Extension yaml
 Invoke-WebRequest -Uri $ManifestUri -OutFile $ManifestPath
 $Manifest = Get-Content $ManifestPath | ConvertFrom-Yaml
