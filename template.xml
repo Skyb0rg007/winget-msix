@@ -11,7 +11,6 @@
         GenerateCommandLineFile="true"
         AllowPromptForPassword="false"
         EnforceMicrosoftStoreVersioningRequirements="false"
-        v2:ServerPortNumber="1599"
         v5:AddPackageIntegrity="true">
 
     <!--Note: Exclusion items are optional and if declared take precedence over the default tool exclusion items
@@ -79,7 +78,7 @@
 
     <Installer
         Path=""
-        InstallLocation="C:\Program Files\MyAppInstallLocation" />
+        InstallLocation="C:\Program Files\$InstallLocation" />
 
     <!--NOTE: This section specifies that the conversion will be run on a local Virtual Machine. This is optional if you want to change your conversion environment from the default local machine.
     <VirtualMachine Name="vmname" Username="vmusername"/>
@@ -90,11 +89,12 @@
     -->
 
     <PackageInformation
-        PackageName="MyAppPackageName"
-        PackageDisplayName="MyApp Display Name"
+        PackageName="$PackageName"
+        PackageDisplayName="$DisplayName"
         PublisherName="CN=skye@soss.website"
         PublisherDisplayName="Skyenet"
-        Version="1.1.0.0">
+        Version="1.1.0.0"
+        v4:PackageDescription="$DisplayName repackaged as MSIX">
 
     <!--NOTE: This ID will be used if the Application entry detected matches the specified ExecutableName
         <Applications>
