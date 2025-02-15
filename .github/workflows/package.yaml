@@ -5,6 +5,9 @@ on:
   workflow_dispatch:
     inputs: {}
 
+env:
+  mpt_version: 0.1.2
+
 jobs:
   build-msix:
     strategy:
@@ -41,18 +44,18 @@ jobs:
           Set-PSRepository PSGallery -InstallationPolicy Trusted
           Install-Module powershell-yaml -ErrorAction Stop
 
-      # Cache the .msix for the MSIX Packaging Tool version 0.1.2
+      # Cache the .msix for the MSIX Packaging Tool
       - name: Setup MPT cache
         uses: actions/cache@v4
         id: mpt-cacher
         with:
           path: C:/Users/runneradmin/Documents/MPT
-          key: ${{ runner.os }}-MPT-0.1.2
+          key: ${{ runner.os }}-MPT-${{ env.mpt_version }}
 
       - name: Download MSIX Packaging Tool
         if: steps.mpt-cacher.outputs.cache-hit != 'true'
         run: |
-          $Version = "v0.1.2"
+          $Version = "v${{ env.mpt_version }}"
           $Uri = "https://github.com/microsoft/win32-app-isolation/releases/download/$Version/ACP-MPT-$Version.zip"
           $Zip = "C:\Users\runneradmin\Downloads\ACP-MPT-$Version.zip"
           $MPT = "C:\Users\runneradmin\Downloads\ACP-MPT-$Version"
@@ -68,30 +71,73 @@ jobs:
           Import-Module -UseWindowsPowerShell Appx
           Add-AppxPackage -Path C:\Users\runneradmin\Documents\MPT\MsixPackagingTool.msixbundle
 
-      - name: Package the MSIX
+      # Restore the previous cache to get the WinGet manifest and resulting MSIX file
+      - name: Restore cached manifest and result
+        id: manifest-cacher-restore
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            C:/Users/runneradmin/Documents/MSIX-Apps/${{ matrix.package }}-${{ matrix.version }}
+          key: manifest-${{ matrix.package }}-${{ matrix.version }}
+
+      - name: Download WinGet Manifest
+        id: manifest-download
         run: |
-          New-Item -Type Directory -Name _build\msix-output
+          $Com, $Pkg = "${{ matrix.package }}".Split(".")
+          $C = [char]::ToLower($Com[0])
+          $OldManifestPath = "C:\Users\runneradmin\Documents\MSIX-Apps\${{ matrix.package }}-${{ matrix.version }}\installer.yaml"
+          $NewManifestPath = "C:\Users\runneradmin\Downloads\installer.yaml"
+          $WinGetUri = "https://raw.githubusercontent.com/microsoft/winget-pkgs/refs/heads/master/manifests"
+          $ManifestUri = "$WinGetUri/$C/$Com/$Pkg/${{ matrix.version }}/$Com.$Pkg.installer.yaml"
+          Write-Output "Manifest URI: $ManifestUri"
+          Invoke-WebRequest -Uri $ManifestUri -OutFile $NewManifestPath
+          if (Test-Path $OldManifestPath) {
+            $OldManifest = GetContent $OldManifestPath
+            $NewManifest = GetContent $NewManifestPath
+            if ($OldManifest -eq $NewManifest) {
+              Write-Output "cache-hit=true" >> $env:GITHUB_OUTPUT
+            } else {
+              Write-Output "cache-hit=false" >> $env:GITHUB_OUTPUT
+              Move-Item $NewManifestPath $OldManifestPath -Force
+            }
+          } else {
+            Write-Output "cache-hit=false" >> $env:GITHUB_OUTPUT
+            Move-Item $NewManifestPath $OldManifestPath -Force
+          }
+
+      - name: Package the MSIX
+        if: steps.manifest-download.outputs.cache-hit != 'true'
+        run: |
           $Com, $Pkg = "${{ matrix.package }}".Split(".")
           $C = [char]::ToLower($Com[0])
           $Params = @{
             TemplatePath = "templates\$C\$Com\$Pkg\${{ matrix.version }}\${{ matrix.package }}_template.xml"
-            OutputPath = ".\_build\msix-output"
+            OutputPath = "C:\Users\runneradmin\Documents\MSIX-Apps\${{ matrix.package }}-${{ matrix.version }}"
             Architecture = "${{ matrix.arch }}"
             Verbose = $true
           }
           Write-Output "TemplatePath: $($Params.TemplatePath)"
           .\scripts\Build-Msix.ps1 @Params
 
+      # Save cache
+      - name: Save manifest and result
+        id: manifest-cacher-save
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            C:/Users/runneradmin/Documents/MSIX-Apps/${{ matrix.package }}-${{ matrix.version }}
+          key: ${{ steps.manifest-cacher-restore.outputs.cache-primary-key }}
+
       - name: Upload MSIX
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.package }}-${{ matrix.version }}-${{ matrix.arch }}-msix
           path: |
-            _build/msix-output/*.msix
+            C:/Users/runneradmin/Documents/MSIX-Apps/${{ matrix.package }}-${{ matrix.version }}/*.msix
 
       - name: Upload template file
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.package }}-${{ matrix.version }}-${{ matrix.arch }}-template
           path: |
-            _build/msix-output/*.xml
+            C:/Users/runneradmin/Documents/MSIX-Apps/${{ matrix.package }}-${{ matrix.version }}/*.xml
