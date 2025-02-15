@@ -4,6 +4,8 @@
 A WinGet repository that mirrors [winget-pkgs][1]
 but releases the packages using MSIX.
 
+Note: Don't use! Still in development
+
 ## Why?
 
 MSIX applications have benefits over standard application installations:
