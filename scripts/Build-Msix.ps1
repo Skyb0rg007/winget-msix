@@ -75,6 +75,9 @@ $Manifest = Get-Content $ManifestPath | ConvertFrom-Yaml
 
 # Get the installer for this run of Build-Msix
 $Installer = $Manifest.Installers | Where-Object { $_.Architecture -eq $Architecture }
+if ($Installer -is [array]) {
+    $Installer = $Installer | Where-Object { $_.Scope -eq 'machine' }
+}
 
 # The template file needs the Installer::Path to have the right file extension
 $Ext = switch -exact ($Manifest.InstallerType) {
@@ -97,7 +100,7 @@ if ((Get-FileHash $InstallerPath).Hash -ne $Installer.InstallerSha256) {
 # Setup the paths in the packaging template
 $Template.MsixPackagingToolTemplate.Installer.Path = "$InstallerPath"
 $Template.MsixPackagingToolTemplate.SaveLocation.PackagePath = "$OutputPath\${PackageName}_$Architecture.msix"
-$Template.MsixPackagingToolTemplate.SaveLocation.TemplatePath = "$OutputPath\${PackageName}_${Architecture}_template.yaml"
+$Template.MsixPackagingToolTemplate.SaveLocation.TemplatePath = "$OutputPath"
 
 $OutputTemplate = New-TemporaryFileExt -Extension xml
 $Template.Save($OutputTemplate)

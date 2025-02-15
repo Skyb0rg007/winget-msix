@@ -11,22 +11,22 @@
         GenerateCommandLineFile="true"
         AllowPromptForPassword="false"
         EnforceMicrosoftStoreVersioningRequirements="false"
-        v2:ServerPortNumber="1599"
         v5:AddPackageIntegrity="true">
-
     </Settings>
 
+    <SaveLocation PackagePath="" TemplatePath="" />
+
     <Installer
-        Path="C:\Users\skyle\Downloads\freetube-0.23.1-setup-x64.exe"
-        Arguments="/S /ALLUSERS"
-        />
+        Path=""
+        Arguments="/S /ALLUSERS" />
 
     <PackageInformation
         PackageName="PrestonN.FreeTube"
         PackageDisplayName="FreeTube"
         PublisherName="CN=skye@soss.website"
         PublisherDisplayName="Skyenet"
-        Version="0.23.1.0">
+        Version="0.23.1"
+        v4:PackageDescription="FreeTube repackaged as MSIX">
 
     </PackageInformation>
 </MsixPackagingToolTemplate>

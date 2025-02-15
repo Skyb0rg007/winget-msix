@@ -6,7 +6,13 @@ on:
     inputs: {}
 
 jobs:
-  build-anki-x64:
+  build-msix:
+    strategy:
+      matrix:
+        include:
+          - package: anki
+            arch: x64
+            template: templates\a\Anki\Anki\25.02\Anki.Anki_template.xml
     runs-on: windows-latest
     steps:
       - name: Checkout repository
@@ -33,12 +39,12 @@ jobs:
         run: |
           New-Item -Type Directory -Name _build\msix-output
           $File = "templates\a\Anki\Anki\25.02\Anki.Anki_template.xml"
-          .\scripts\Build-Msix.ps1 -TemplatePath $File -OutputPath .\_build\msix-output -Architecture x64
+          .\scripts\Build-Msix.ps1 -TemplatePath ${{ matrix.template }} -OutputPath .\_build\msix-output -Architecture ${{ matrix.arch }}
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: msix
+          name: ${{ matrix.package }}-msix
           path: |
             _build/msix-output
 
