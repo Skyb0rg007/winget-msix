@@ -11,9 +11,11 @@ jobs:
       matrix:
         include:
           - package: anki
+            version: "25.02"
             arch: x64
             template: templates\a\Anki\Anki\25.02\Anki.Anki_template.xml
           - package: freetube
+            version: "0.23.1"
             arch: x64
             template: templates\p\PrestonN\FreeTube\0.23.1\PrestonN.FreeTube_template.xml
     runs-on: windows-latest
@@ -41,13 +43,24 @@ jobs:
       - name: Package the MSIX
         run: |
           New-Item -Type Directory -Name _build\msix-output
-          $File = "templates\a\Anki\Anki\25.02\Anki.Anki_template.xml"
-          .\scripts\Build-Msix.ps1 -TemplatePath ${{ matrix.template }} -OutputPath .\_build\msix-output -Architecture ${{ matrix.arch }}
+          $Params = @{
+            TemplatePath = "${{ matrix.template }}"
+            OutputPath = ".\_build\msix-output"
+            Architecture = "${{ matrix.arch }}"
+            Verbose = $true
+          }
+          .\scripts\Build-Msix.ps1 @Params
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.package }}-msix
+          name: ${{ matrix.package }}-${{ matrix.version }}-${{ matrix.arch }}-msix
           path: |
-            _build/msix-output
+            _build/msix-output/*.msix
 
+      - name: Upload template file
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.package }}-${{ matrix.version }}-${{ matrix.arch }}-template
+          path: |
+            _build/msix-output/*.yaml
