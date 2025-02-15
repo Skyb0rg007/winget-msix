@@ -20,9 +20,11 @@ MSIX also prevents changes to the registry which can be even harder to maintain.
 2. Normalized Installation Locations
 
 Some applications use confusing installation paths.
-An app packaged with MSIX centralizes all the directories associated with the app:
+An app packaged with MSIX centralizes all the directories associated with the app, including
+locations such as `%AppData%`, `%LocalAppData%`, and others such as `%UserProfile%\Documents`
 
 `%ProgramFiles%\WindowsApps\<package_name>`: The installation directories, normally read-only
+
 `%LocalAppData%\Packages\<package_name>`: User data
 
 3. AppContainer Integration
@@ -38,7 +40,7 @@ This has not been done yet.
 
 # Template Files
 
-The template files are built on top of the Sample Template found [here][2], which is modified for the signing requirements.
+The template files are built on top of the Sample Template found [here][2].
 
 [1]: https://github.com/microsoft/winget-pkgs
 [2]: https://learn.microsoft.com/en-us/windows/msix/packaging-tool/generate-template-file#sample-conversion-template-file

@@ -123,7 +123,7 @@ jobs:
       # Save cache
       - name: Save manifest and result
         id: manifest-cacher-save
-        uses: actions/cache/restore@v4
+        uses: actions/cache/save@v4
         with:
           path: |
             C:/Users/runneradmin/Documents/MSIX-Apps/${{ matrix.package }}-${{ matrix.version }}
