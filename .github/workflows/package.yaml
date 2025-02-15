@@ -46,14 +46,14 @@ jobs:
           $Doc.Save("$PWD\$File")
           Get-Content "$PWD\$File" | Write-Output
 
+      - name: Run the MSIX Packaging Tool
+        run: |
+          MsixPackagingTool create-package --template templates\a\Anki\Anki\25.02\Anki.Anki_template.xml
+
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
           name: msix
           path: |
-            ./_build
-
-      - name: Run the MSIX Packaging Tool
-        run: |
-          MsixPackagingTool create-package --template templates\a\Anki\Anki\25.02\Anki.Anki_template.xml
+            C:/Users/runneradmin/Desktop
 

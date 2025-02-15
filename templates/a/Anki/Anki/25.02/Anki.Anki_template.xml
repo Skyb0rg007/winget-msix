@@ -24,7 +24,7 @@
         PackageDisplayName="Anki"
         PublisherName="CN=skye@soss.website"
         PublisherDisplayName="Skyenet"
-        Version="25.02.0.0"
+        Version="25.2.0.0"
         v4:PackageDescription="Anki repackaged as MSIX">
 
     </PackageInformation>
