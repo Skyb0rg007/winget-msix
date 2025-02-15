@@ -44,17 +44,30 @@ jobs:
           Set-PSRepository PSGallery -InstallationPolicy Trusted
           Install-Module powershell-yaml -ErrorAction Stop
 
-      - name: Install MSIX Packaging Tool
-        run: |
-          New-Item -Type Directory -Name _build
+      - name: Setup MPT cache
+        uses: actions/cache@v4
+        id: mpt-cacher
+        with:
+          path: C:/Users/runneradmin/Documents/MPT
+          key: ${{ runner.os }}-MPT-0.1.2
 
+      - name: Download MSIX Packaging Tool
+        if: steps.mpt-cacher.outputs.cache-hit != 'true'
+        run: |
           $Version = "v0.1.2"
           $Uri = "https://github.com/microsoft/win32-app-isolation/releases/download/$Version/ACP-MPT-$Version.zip"
-          Invoke-WebRequest -Uri $Uri -OutFile .\_build\ACP-MPT-$Version.zip
-          Expand-Archive -Path .\_build\ACP-MPT-$Version.zip -DestinationPath .\_build
+          $Zip = "C:\Users\runneradmin\Downloads\ACP-MPT-$Version.zip"
+          $MPT = "C:\Users\runneradmin\Downloads\ACP-MPT-$Version"
+          $MPTCache = "C:\Users\runneradmin\Documents\MPT"
+          Invoke-WebRequest -Uri $Uri -OutFile $Zip
+          Expand-Archive -Path $Zip -DestinationPath $MPT
+          New-Item -Type Directory $MPTCache
+          Move-Item -Path $MPT\MsixPackagingTool.msixbundle -Destination $MPTCache
 
+      - name: Install MSIX Packaging Tool
+        run: |
           Import-Module -UseWindowsPowerShell Appx
-          Add-AppxPackage -Path .\_build\MsixPackagingTool.msixbundle
+          Add-AppxPackage -Path C:\Users\runneradmin\Documents\MPT\MsixPackagingTool.msixbundle
 
       - name: Package the MSIX
         run: |
